@@ -31,6 +31,7 @@ This repo is purely a **Twilio Flex Plugin**. If you are new to the Flex world, 
 
 ### How to deploy
 
-- Once you have adapted and tested all your logic, you can deploy it. Use `npm run build` and `npm run deploy` to deploy the **Flex Plugin** part to **Flex**.
+- Once you have adapted and tested all your logic, you can deploy it. Use `npm run build` and `npm run deploy -- --changelog "first deploy"` to deploy the **Flex Plugin** part to **Flex**.
 - Then you can enable this Plugin, once deployed, in the [Flex Admin page](https://flex.twilio.com/admin/plugins).
 - On SAP, you have to use `https://flex.twilio.com/YOUR_RUNTIME_DOMAIN` as the **iFrame URL**. The "YOUR_RUNTIME_DOMAIN" you can get it [here](https://console.twilio.com/us1/develop/flex/manage/single-sign-on?frameUrl=%2Fconsole%2Fflex%2Fsingle-sign-on%3Fx-target-region%3Dus1).
+- Oh, having CORS issues to render Flex into an iFrame? Add the URL of your SAP [in here](https://console.twilio.com/us1/develop/flex/manage/general?frameUrl=%2Fconsole%2Fflex%2Fsettings%3Fx-target-region%3Dus1)
