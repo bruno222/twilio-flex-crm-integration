@@ -20,7 +20,7 @@ export default class SapC4CIntegrationPlugin extends FlexPlugin {
     //
     (manager.workerClient as any).on('reservationCreated', (reservation: any) => {
       console.log('SAP-plugin - reservationCreated', reservation);
-      const taskSid = reservation.task.taskSid;
+      const taskSid = reservation.task.sid;
 
       if (reservation.task.taskChannelUniqueName === 'voice') {
         // Inbound Calls
@@ -58,7 +58,7 @@ export default class SapC4CIntegrationPlugin extends FlexPlugin {
     });
 
     //
-    // Call has ended -> Tell SAP about that
+    // When the Agent finishes the call (not the customer) -> We send the notification to SAP about that
     //
     flex.Actions.addListener('beforeHangupCall', (reservation) => {
       console.log('SAP-plugin - beforeHangupCall', reservation);
