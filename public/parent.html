@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>SAP Integration Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script>
+      function sapExampleClickToCall(PhoneNumber) {
+        window.frames[0].postMessage({ PhoneNumber }, '*');
+      }
+
+      const receiveMessage = (ev) => {
+        console.log('SAP-parent - postMessage received: ', ev.data.payload);
+      };
+      window.addEventListener('message', receiveMessage, false);
+    </script>
+  </head>
+  <body>
+    <center>
+      <iframe src="/" width="400" height="600"></iframe>
+      <br /><br /><br /><br />
+      <a href="#" onclick="event.preventDefault(); sapExampleClickToCall('+49 15735991110');"
+        >Example of click to call from SAP to Flex to the number +4915735991110</a
+      >
+      <br />
+      <hr />
+      <br />
+      <b>Open the Chrome Console and filter for "SAP-parent" or "SAP-plugin" or just "SAP" to see the iFrame and the Parent talking to each other.</b>
+    </center>
+  </body>
+</html>
