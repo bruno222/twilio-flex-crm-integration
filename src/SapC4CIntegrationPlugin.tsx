@@ -16,6 +16,47 @@ export default class SapC4CIntegrationPlugin extends FlexPlugin {
     flex.AgentDesktopView.defaultProps.showPanel2 = false;
 
     //
+    // Once the chat ends, send the chat messages to SAP
+    //
+    (manager.workerClient as any).on('reservationCreated', (reservation: any) => {
+      const listenForStatus = 'wrapup';
+      reservation.on(listenForStatus, (payload: any) => {
+        console.log('SAP-plugin - Wrapup logic - task just went to Wrap up stage', reservation, payload);
+        const { taskChannelUniqueName, attributes, sid } = payload.task;
+        const { channelSid } = attributes;
+
+        if (taskChannelUniqueName !== 'chat') {
+          console.log('SAP-plugin - Wrapup logic - exiting... It is not a Chat.');
+          return;
+        }
+
+        console.log('SAP-plugin - Wrapup logic - Chat Task Attributes:', attributes);
+
+        const chatStore = manager.store.getState().flex.chat.channels[channelSid];
+
+        if (!chatStore || !chatStore.messages) {
+          console.warn(
+            `SAP-plugin - Wrapup logic - Why is this empty? Debug me please pasting 'window.Twilio.Flex.Manager.getInstance().store.getState().flex.chat.channels' on Chrome Console to see the results...`
+          );
+          return;
+        }
+
+        const messages = manager.store.getState().flex.chat.channels[channelSid].messages;
+
+        const chatHistory = [];
+        for (let msg of messages) {
+          const { authorName, isFromMe, index } = msg;
+          const { body, author, timestamp, type, memberSid } = msg.source;
+
+          const obj = { authorName, isFromMe, index, body, author, timestamp, type, memberSid };
+          chatHistory.push(obj);
+        }
+
+        console.log('SAP-plugin - Wrapup logic -  TODO: Send this obj to SAP: ', chatHistory);
+      });
+    });
+
+    //
     // Inbound Call -> Open SAP CTI screen
     //
     (manager.workerClient as any).on('reservationCreated', (reservation: any) => {
