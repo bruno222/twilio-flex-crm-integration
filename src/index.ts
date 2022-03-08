@@ -1,4 +1,4 @@
-import * as FlexPlugin from 'flex-plugin';
-import SapC4CIntegrationPlugin from './SapC4CIntegrationPlugin';
+import * as FlexPlugin from '@twilio/flex-plugin';
+import CrmIntegrationPlugin from './CrmIntegrationPlugin';
 
-FlexPlugin.loadPlugin(SapC4CIntegrationPlugin);
+FlexPlugin.loadPlugin(CrmIntegrationPlugin);
