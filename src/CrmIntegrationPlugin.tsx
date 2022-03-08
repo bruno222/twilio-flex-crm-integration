@@ -2,9 +2,9 @@ import React from 'react';
 import * as Flex from '@twilio/flex-ui';
 import { FlexPlugin } from 'flex-plugin';
 
-const PLUGIN_NAME = 'SapC4CIntegrationPlugin';
+const PLUGIN_NAME = 'CrmIntegrationPlugin';
 
-export default class SapC4CIntegrationPlugin extends FlexPlugin {
+export default class CrmIntegrationPlugin extends FlexPlugin {
   constructor() {
     super(PLUGIN_NAME);
   }
@@ -16,27 +16,27 @@ export default class SapC4CIntegrationPlugin extends FlexPlugin {
     flex.AgentDesktopView.defaultProps.showPanel2 = false;
 
     //
-    // Once the chat ends, send the chat messages to SAP
+    // Once the chat ends, send the chat messages to log('CRM-
     //
     (manager.workerClient as any).on('reservationCreated', (reservation: any) => {
       const listenForStatus = 'wrapup';
       reservation.on(listenForStatus, (payload: any) => {
-        console.log('SAP-plugin - Wrapup logic - task just went to Wrap up stage', reservation, payload);
+        console.log('CRM-plugin - Wrapup logic - task just went to Wrap up stage', reservation, payload);
         const { taskChannelUniqueName, attributes, sid } = payload.task;
         const { channelSid } = attributes;
 
         if (taskChannelUniqueName !== 'chat') {
-          console.log('SAP-plugin - Wrapup logic - exiting... It is not a Chat.');
+          console.log('CRM-plugin - Wrapup logic - exiting... It is not a Chat.');
           return;
         }
 
-        console.log('SAP-plugin - Wrapup logic - Chat Task Attributes:', attributes);
+        console.log('CRM-plugin - Wrapup logic - Chat Task Attributes:', attributes);
 
         const chatStore = manager.store.getState().flex.chat.channels[channelSid];
 
         if (!chatStore || !chatStore.messages) {
           console.warn(
-            `SAP-plugin - Wrapup logic - Why is this empty? Debug me please pasting 'window.Twilio.Flex.Manager.getInstance().store.getState().flex.chat.channels' on Chrome Console to see the results...`
+            `CRM-plugin - Wrapup logic - Why is this empty? Debug me please pasting 'window.Twilio.Flex.Manager.getInstance().store.getState().flex.chat.channels' on Chrome Console to see the results...`
           );
           return;
         }
@@ -52,15 +52,15 @@ export default class SapC4CIntegrationPlugin extends FlexPlugin {
           chatHistory.push(obj);
         }
 
-        console.log('SAP-plugin - Wrapup logic -  TODO: Send this obj to SAP: ', chatHistory);
+        console.log('CRM-plugin - Wrapup logic -  TODO: Send this obj to CRM: ', chatHistory);
       });
     });
 
     //
-    // Inbound Call -> Open SAP CTI screen
+    // Inbound Call -> Open CRM screen
     //
     (manager.workerClient as any).on('reservationCreated', (reservation: any) => {
-      console.log('SAP-plugin - reservationCreated', reservation);
+      console.log('CRM-plugin - reservationCreated', reservation);
       const taskSid = reservation.task.sid;
 
       if (reservation.task.taskChannelUniqueName === 'voice') {
@@ -69,14 +69,12 @@ export default class SapC4CIntegrationPlugin extends FlexPlugin {
           const payload = {
             Action: 'ACCEPT',
             Type: 'CALL',
-            ANI: reservation.task.attributes.caller,
-            DNIS: reservation.task.attributes.caller,
             EventType: 'INBOUND',
-            ExternalReferenceID: taskSid,
-            ExternalOriginalReferenceID: taskSid,
+            caller: reservation.task.attributes.caller,
+            taskSid,
           };
 
-          console.log('SAP-plugin - sending postMessage payload to SAP (1):', payload);
+          console.log('CRM-plugin - sending postMessage payload to CRM (1):', payload);
           window.parent.postMessage({ payload }, '*');
           return;
         }
@@ -87,22 +85,20 @@ export default class SapC4CIntegrationPlugin extends FlexPlugin {
           Action: 'ACCEPT',
           Type: 'CALL',
           EventType: 'OUTBOUND',
-          ANI: reservation.task.attributes.outbound_to,
-          DNIS: reservation.task.attributes.outbound_to,
-          ExternalReferenceID: taskSid,
-          ExternalOriginalReferenceID: taskSid,
+          callTo: reservation.task.attributes.outbound_to,
+          taskSid,
         };
 
-        console.log('SAP-plugin - sending postMessage payload to SAP (2):', payload);
+        console.log('CRM-plugin - sending postMessage payload to CRM (2):', payload);
         window.parent.postMessage({ payload }, '*');
       }
     });
 
     //
-    // When the Agent finishes the call (not the customer) -> We send the notification to SAP about that
+    // When the Agent finishes the call (not the customer) -> We send the notification to CRM about that
     //
     flex.Actions.addListener('beforeHangupCall', (reservation) => {
-      console.log('SAP-plugin - beforeHangupCall', reservation);
+      console.log('CRM-plugin - beforeHangupCall', reservation);
       const taskSid = reservation.task.taskSid;
 
       if (reservation.task.taskChannelUniqueName === 'voice') {
@@ -114,38 +110,34 @@ export default class SapC4CIntegrationPlugin extends FlexPlugin {
         if (reservation.task.attributes.direction !== 'outbound') {
           payload = {
             ...payload,
-            ANI: reservation.task.attributes.caller,
-            DNIS: reservation.task.attributes.caller,
-            ExternalReferenceID: taskSid,
-            ExternalOriginalReferenceID: taskSid,
+            caller: reservation.task.attributes.caller,
+            taskSid,
           };
         } else {
           payload = {
             ...payload,
-            ANI: reservation.task.attributes.outbound_to,
-            DNIS: reservation.task.attributes.outbound_to,
-            ExternalReferenceID: taskSid,
-            ExternalOriginalReferenceID: taskSid,
+            callTo: reservation.task.attributes.outbound_to,
+            taskSid,
           };
         }
 
-        console.log('SAP-plugin - sending postMessage payload to SAP (3):', payload);
+        console.log('CRM-plugin - sending postMessage payload to CRM (3):', payload);
         window.parent.postMessage({ payload }, '*');
       }
     });
 
     //
-    // Outbound call from SAP click-to-call
+    // Outbound call from CRM click-to-call
     //
     const onMessage = (flex: typeof Flex, Manager: Flex.Manager, event: any) => {
-      console.log('SAP-plugin - postMessage received for the click-to-call: ', event.data);
+      console.log('CRM-plugin - postMessage received for the click-to-call: ', event.data);
 
       try {
         flex.Actions.invokeAction('StartOutboundCall', {
           destination: event.data.PhoneNumber.replace(/\D/g, ''),
         });
       } catch (e) {
-        console.log('SAP-plugin - Error while calling StartOutboundCall: ', e);
+        console.log('CRM-plugin - Error while calling StartOutboundCall: ', e);
       }
     };
 
