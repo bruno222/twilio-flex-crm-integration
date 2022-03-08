@@ -1,6 +1,6 @@
 import React from 'react';
 import * as Flex from '@twilio/flex-ui';
-import { FlexPlugin } from 'flex-plugin';
+import { FlexPlugin } from '@twilio/flex-plugin';
 
 const PLUGIN_NAME = 'CrmIntegrationPlugin';
 
