@@ -17,9 +17,15 @@
       window.addEventListener('message', receiveMessage, false);
     </script>
   </head>
-  <body>
+  <body style="background-color: rgb(255, 187, 187)">
     <center>
-      <iframe src="/" width="400" height="600"></iframe>
+      <button onclick="event.preventDefault(); document.getElementById('flex').style.display = '';">Open Flex</button>
+      <button onclick="event.preventDefault(); document.getElementById('flex').style.display = 'none';">Close Flex</button>
+      <hr />
+
+      <div style="width: 400px; height: 600px">
+        <iframe id="flex" src="/" width="100%" height="100%"></iframe>
+      </div>
       <br /><br /><br /><br />
       <a href="#" onclick="event.preventDefault(); crmExampleClickToCall('+49 15735991110');"
         >Example of click to call from yoru CRM to Flex to the number +4915735991110</a
