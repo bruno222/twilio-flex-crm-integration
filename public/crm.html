@@ -8,7 +8,11 @@
     <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
     <script>
       function crmExampleClickToCall(PhoneNumber) {
-        window.frames[0].postMessage({ PhoneNumber }, '*');
+        window.frames[0].postMessage({ PhoneNumber, type: 'call-outbound' }, '*');
+      }
+
+      function crmExampleStartWhatsapp(PhoneNumber, name) {
+        window.frames[0].postMessage({ PhoneNumber, name, type: 'whatsapp-outbound' }, '*');
       }
 
       const receiveMessage = (ev) => {
@@ -27,9 +31,11 @@
         <iframe id="flex" src="/" width="100%" height="100%"></iframe>
       </div>
       <br /><br /><br /><br />
-      <a href="#" onclick="event.preventDefault(); crmExampleClickToCall('+49 15735991110');"
-        >Example of click to call from yoru CRM to Flex to the number +4915735991110</a
-      >
+      <strong>Use-case 1</strong> - Click <a href="#" onclick="event.preventDefault(); crmExampleClickToCall('+49 15735991110');">here</a> to do a
+      click-to-call from your CRM to Flex to the number +4915735991110 <br /><br />
+      <strong>Use-case 2</strong> - Click
+      <a href="#" onclick="event.preventDefault(); crmExampleStartWhatsapp('+49xxxxxxxxxxxx', 'Mike');">here</a> to send a Whatsapp Template message
+      to the customer. Once he/she replies, you can configure in Console to send this incoming message to Flex (e.g. Whatsapp > Studio > Flex)
       <br />
       <hr />
       <br />

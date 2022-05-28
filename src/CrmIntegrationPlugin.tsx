@@ -127,17 +127,52 @@ export default class CrmIntegrationPlugin extends FlexPlugin {
     });
 
     //
-    // Outbound call from CRM click-to-call
+    // Receive postMessages from CRM
     //
-    const onMessage = (flex: typeof Flex, Manager: Flex.Manager, event: any) => {
-      console.log('CRM-plugin - postMessage received for the click-to-call: ', event.data);
+    const onMessage = async (flex: typeof Flex, Manager: Flex.Manager, event: any) => {
+      console.log('CRM-plugin - postMessage received: ', event.data);
 
-      try {
-        flex.Actions.invokeAction('StartOutboundCall', {
-          destination: event.data.PhoneNumber.replace(/\D/g, ''),
-        });
-      } catch (e) {
-        console.log('CRM-plugin - Error while calling StartOutboundCall: ', e);
+      //
+      // Make an outbound call
+      //
+      if (event.data.type === 'call-outbound') {
+        try {
+          flex.Actions.invokeAction('StartOutboundCall', {
+            destination: event.data.PhoneNumber.replace(/\D/g, ''),
+          });
+        } catch (e) {
+          console.log('CRM-plugin - Error while calling StartOutboundCall: ', e);
+        }
+      }
+
+      //
+      // Start a Whatsapp chat with the customer
+      //
+      if (event.data.type === 'whatsapp-outbound') {
+        try {
+          /**
+           * TODO:
+           *
+           *     In order to receive Whatsapp messages in your phone, you have to:
+           *
+           *      1. Get your cellphone and send a message to our Twilio Sandbox number, this will allow you to receive Whatsapp messages while you are not in Production.
+           *          a. Go to https://console.twilio.com/us1/develop/sms/settings/whatsapp-sandbox?frameUrl=%2Fconsole%2Fsms%2Fwhatsapp%2Fsandbox%3Fx-target-region%3Dus1
+           *          b. And send "join something-something" to this number: +1 415 523 8886.
+           *
+           *      2. Create the Twilio Function like this one: https://gist.github.com/bruno222/2d58b94733605ab0dec7c2d7d91fd1f3
+           *          a. once you have it created, change the URL below to your Function URL.
+           */
+          await fetch('https://xxxxxxxx.twil.io/crm-example/send_whatsapp_message', {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ to: event.data.PhoneNumber, name: event.data.name }),
+          });
+        } catch (e) {
+          console.log('CRM-plugin - Error while sending whatsapp message: ', e);
+        }
       }
     };
 
