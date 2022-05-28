@@ -1,3 +1,7 @@
+<p align="center" width="100%">
+    <img width="100%" src="https://user-images.githubusercontent.com/1012787/170844584-e266c1d9-750e-4edb-a67b-20273f17a444.gif">
+</p>
+
 ## Not production ready
 
 This is far away from production-ready.
@@ -7,6 +11,7 @@ This is far away from production-ready.
 It is just an example of any `CRM` system communicating with `Twilio Flex`.
 
 This repo only shows the `Flex` part and an example of what would be your CRM using a simple `crm.html` to communicate with `Flex` in the `iFrame` via `.postMessage()`.
+
 
 ## Pre-requisites
 
