@@ -16,7 +16,12 @@
       }
 
       const receiveMessage = (ev) => {
-        console.log('CRM-parent - postMessage received: ', ev.data.payload);
+        // window.parent.postMessage({ attributes, type: 'inbound-call-accepted' }, '*');
+        console.log('@@@ CRM-parent - postMessage received: ', ev.data);
+
+        if (ev.data.type === 'inbound-call-accepted') {
+          alert('PhoneNumber of the Patient: ' + ev.data.attributes.phonenumber);
+        }
       };
       window.addEventListener('message', receiveMessage, false);
     </script>

@@ -11,6 +11,17 @@ export default class CrmIntegrationPlugin extends FlexPlugin {
 
   init(flex: typeof Flex, manager: Flex.Manager) {
     //
+    // Send the Task Attributes to the CRM
+    //
+    flex.Actions.addListener('afterAcceptTask', ({ task }) => {
+      console.log('@@@ AcceptTask test2', task);
+      const attributes = task.attributes;
+      console.log('@@@ AcceptTask attributes', attributes);
+
+      window.parent.postMessage({ attributes, type: 'inbound-call-accepted' }, '*');
+    });
+
+    //
     // Hide right-hand side panel from Flex, to keep it small
     //
     flex.AgentDesktopView.defaultProps.showPanel2 = false;
