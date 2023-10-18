@@ -1,22 +1,22 @@
 {
-  "name": "plugin-crm-integration",
-  "version": "0.0.1",
+  "name": "twilio-flex-crm-integration-v2",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "start": "twilio flex:plugins:start",
-    "build": "twilio flex:plugins:build",
-    "deploy": "twilio flex:plugins:deploy",
     "postinstall": "flex-plugin pre-script-check"
   },
   "dependencies": {
-    "react": "16.5.2",
-    "react-dom": "16.5.2",
-    "@twilio/flex-plugin-scripts": "5.0.4",
-    "react-emotion": "9.2.12"
+    "@twilio/flex-plugin-scripts": "6.2.2",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "prop-types": "^15.7.2",
+    "@twilio-paste/core": "^10.14.0",
+    "@twilio-paste/icons": "^5.7.0"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "^1",
-    "typescript": "^3",
-    "react-test-renderer": "16.5.2"
+    "@twilio/flex-ui": "2.4.1",
+    "react-test-renderer": "17.0.2",
+    "typescript": "^4"
   }
 }

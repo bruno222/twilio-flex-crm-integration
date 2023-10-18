@@ -1,4 +1,5 @@
 import * as FlexPlugin from '@twilio/flex-plugin';
-import CrmIntegrationPlugin from './CrmIntegrationPlugin';
 
-FlexPlugin.loadPlugin(CrmIntegrationPlugin);
+import TwilioFlexCrmIntegrationV2Plugin from './TwilioFlexCrmIntegrationV2Plugin';
+
+FlexPlugin.loadPlugin(TwilioFlexCrmIntegrationV2Plugin);

@@ -2,14 +2,14 @@ import React from 'react';
 import * as Flex from '@twilio/flex-ui';
 import { FlexPlugin } from '@twilio/flex-plugin';
 
-const PLUGIN_NAME = 'CrmIntegrationPlugin';
+const PLUGIN_NAME = 'TwilioFlexCrmIntegrationV2Plugin';
 
-export default class CrmIntegrationPlugin extends FlexPlugin {
+export default class TwilioFlexCrmIntegrationV2Plugin extends FlexPlugin {
   constructor() {
     super(PLUGIN_NAME);
   }
 
-  init(flex: typeof Flex, manager: Flex.Manager) {
+  async init(flex: typeof Flex, manager: Flex.Manager): Promise<void> {
     //
     // Hide right-hand side panel from Flex, to keep it small
     //
@@ -23,7 +23,7 @@ export default class CrmIntegrationPlugin extends FlexPlugin {
       reservation.on(listenForStatus, (payload: any) => {
         console.log('CRM-plugin - Wrapup logic - task just went to Wrap up stage', reservation, payload);
         const { taskChannelUniqueName, attributes, sid } = payload.task;
-        const { channelSid } = attributes;
+        const { conversationSid } = attributes;
 
         if (taskChannelUniqueName !== 'chat') {
           console.log('CRM-plugin - Wrapup logic - exiting... It is not a Chat.');
@@ -32,23 +32,23 @@ export default class CrmIntegrationPlugin extends FlexPlugin {
 
         console.log('CRM-plugin - Wrapup logic - Chat Task Attributes:', attributes);
 
-        const chatStore = manager.store.getState().flex.chat.channels[channelSid];
+        const chatStore = manager.store.getState().flex.chat.conversations[conversationSid];
 
         if (!chatStore || !chatStore.messages) {
           console.warn(
-            `CRM-plugin - Wrapup logic - Why is this empty? Debug me please pasting 'window.Twilio.Flex.Manager.getInstance().store.getState().flex.chat.channels' on Chrome Console to see the results...`
+            `CRM-plugin - Wrapup logic - Why is this empty? Debug me please pasting 'window.Twilio.Flex.Manager.getInstance().store.getState().flex.chat.conversations' on Chrome Console to see the results...`
           );
           return;
         }
 
-        const messages = manager.store.getState().flex.chat.channels[channelSid].messages;
+        const messages = manager.store.getState().flex.chat.conversations[conversationSid].messages;
 
         const chatHistory = [];
         for (let msg of messages) {
           const { authorName, isFromMe, index } = msg;
-          const { body, author, timestamp, type, memberSid } = msg.source;
+          const { body, author, timestamp } = msg.source;
 
-          const obj = { authorName, isFromMe, index, body, author, timestamp, type, memberSid };
+          const obj = { authorName, isFromMe, index, body, author, timestamp };
           chatHistory.push(obj);
         }
 
@@ -156,12 +156,13 @@ export default class CrmIntegrationPlugin extends FlexPlugin {
            *     In order to receive Whatsapp messages in your phone, you have to:
            *
            *      1. Get your cellphone and send a message to our Twilio Sandbox number, this will allow you to receive Whatsapp messages while you are not in Production.
-           *          a. Go to https://console.twilio.com/us1/develop/sms/settings/whatsapp-sandbox?frameUrl=%2Fconsole%2Fsms%2Fwhatsapp%2Fsandbox%3Fx-target-region%3Dus1
+           *          a. Go to https://console.twilio.com/us1/develop/sms/try-it-out/whatsapp-learn?frameUrl=%2Fconsole%2Fsms%2Fwhatsapp%2Flearn%3Fx-target-region%3Dus1
            *          b. And send "join something-something" to this number: +1 415 523 8886.
            *
            *      2. Create the Twilio Function like this one: https://gist.github.com/bruno222/2d58b94733605ab0dec7c2d7d91fd1f3
            *          a. once you have it created, change the URL below to your Function URL.
            */
+          
           await fetch('https://xxxxxxxx.twil.io/crm-example/send_whatsapp_message', {
             method: 'POST',
             headers: {
